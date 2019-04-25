@@ -1,10 +1,21 @@
-# Εργασία στο μάθημα των Λιμένων
+# Sea Rescue Mission
 
-Optimization of small autonomous vessels' functions
+## Description
+This repo contains python code for the optimization of small autonomous rescue vessels' functions. What we are looking to optimise is the time needed to save all people in danger after a wreck nearby the port. The implementation uses Disjktra's algorithm and A-star algorithm for path planning.
 
 ***
 
-## Επιβίωση στο νερό:
+## Dependencies:
+[![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)  
+The following Python libraries are required:
+1. Matplotlib
+2. Numpy
+3. sys
+4. pyfiglet
+
+***
+
+## Water survival info:
 
 *__Water temperature__: 32 degrees or below  
 Time until exhaustion or unconsciousness: Less than 15 minutes  
@@ -32,4 +43,4 @@ Expected time of survival in the water: 3 hours to indefinite
 
 __People can survive indefinitely in water temperatures above 80 degrees.__
 
-Πηγή: [witn.com](https://www.witn.com/home/headlines/37639264.html?fbclid=IwAR1MX9ILbNpoEvrUhyUFarmyc0c0jeAujIL0o-s3PjkKBo_l_3_jf0T__Fs)
+Source: [witn.com](https://www.witn.com/home/headlines/37639264.html?fbclid=IwAR1MX9ILbNpoEvrUhyUFarmyc0c0jeAujIL0o-s3PjkKBo_l_3_jf0T__Fs)
