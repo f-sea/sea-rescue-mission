@@ -5,7 +5,7 @@ This repo contains python code for the optimization of small autonomous rescue v
 
 ***
 
-## Dependencies:
+## Dependencies
 [![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)  
 The following Python libraries are required:
 1. Matplotlib
@@ -15,7 +15,7 @@ The following Python libraries are required:
 
 ***
 
-## Water survival info:
+## Water survival info
 
 *__Water temperature__: 32 degrees or below  
 Time until exhaustion or unconsciousness: Less than 15 minutes  
