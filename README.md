@@ -6,7 +6,7 @@ This repo contains python code for the optimization of small autonomous rescue v
 ***
 
 ## Dependencies
-[![Python 3.7](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-360/)  
+[![Python 3.7](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-370)  
 The following Python libraries are required:
 1. Matplotlib
 2. Numpy
