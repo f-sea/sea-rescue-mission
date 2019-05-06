@@ -6,9 +6,12 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import ion, show
+import os
 from util import *
 
 show_animation = True
+cluster_labels = []
+cl_pos = []
 
 '''---------------------------------------------------------------------------------------------
 This module handles all of the algorithm's ploting
@@ -23,6 +26,9 @@ def make_needed_plots(port_x, port_y, people_indanger, centerX, centerY, enc_cir
     for person in people_indanger:
         if (person.id == 'cluster'):
             plt.plot(person.x, person.y, 'm,')
+            an = plt.annotate(person.closeby, (person.x, person.y), fontsize=7)
+            cluster_labels.append(an)
+            cl_pos.append([person.x, person.y])
         else:
             plt.plot(person.x, person.y, 'r,')
     plt.plot(centerX, centerY, 'cx')
@@ -31,7 +37,7 @@ def make_needed_plots(port_x, port_y, people_indanger, centerX, centerY, enc_cir
     plt.ylabel('y [m]')
     plt.axis('equal')
     plt.grid(color='g', linestyle='--', linewidth=2)
-    plt.title('Problem placement')
+    plt.title('Mission overview')
     plt.show()
     plt.pause(0.0001)
 
@@ -55,21 +61,36 @@ def main(arguments):
     """
     # Print ASCII header
     ascii_banner = pyfiglet.figlet_format("Sea Rescue Mission")
-    print(bcolors.CYAN + ascii_banner + bcolors.ENDC)
-    print (bcolors.BOLD + bcolors.OKBLUE + "Develloped by:" + bcolors.ENDC + bcolors.ENDC)
-    print (bcolors.BOLD + "Nick Kougiatsos -N.A.M.E" + bcolors.ENDC)
-    print (bcolors.BOLD + "Dimitris Tsoumpelis -N.A.M.E" + bcolors.ENDC + "\n")
+    if (os.name == 'posix'):
+        print(bcolors.CYAN + ascii_banner + bcolors.ENDC)
+        print (bcolors.BOLD + bcolors.OKBLUE + "Develloped by:" + bcolors.ENDC + bcolors.ENDC)
+        print (bcolors.BOLD + "Nick Kougiatsos -N.A.M.E" + bcolors.ENDC)
+        print (bcolors.BOLD + "Dimitris Tsoumpelis -N.A.M.E" + bcolors.ENDC + "\n")
+    else:
+        print(ascii_banner)
+        print ("Develloped by:")
+        print ("Nick Kougiatsos -N.A.M.E")
+        print ("Dimitris Tsoumpelis -N.A.M.E \n")
 
     # Arguments placing
-    port_x = float(arguments[1])
-    port_y = float(arguments[2])
-    wreck_x = float(arguments[3])
-    wreck_y = float(arguments[4])
-    R_max_possible = float(arguments[5])  # Distance in which there might lay passengers after the wreck [m]
-    people_on_board = int(arguments[6])  # Defines number of points to be generated
-    ii = 7
+    l = []
     try:
-        people_dead = int(arguments[ii])  # The algorithm's minimum goal
+        f = open('input.txt', 'r')
+    except:
+        print('No input file present!')
+        print('Exiting now...')
+        exit()
+    for line in f:
+        l.append(line.split('#')[0].split())
+    port_x = float(l[0][0])
+    port_y = float(l[1][0])
+    wreck_x = float(l[2][0])
+    wreck_y = float(l[3][0])
+    R_max_possible = float(l[4][0])  # Distance in which there might lay passengers after the wreck [m]
+    people_on_board = int(l[5][0])  # Defines number of points to be generated
+    ii = 6
+    try:
+        people_dead = int(l[ii][0])  # The algorithm's minimum goal
         ii = ii + 1
     except:
         pass
@@ -120,7 +141,7 @@ def main(arguments):
 
     algorithm_selection = input(" Do you want to use Dijskra or A-star algorithm? (d/a) \n")
     if ((algorithm_selection == "d") or (algorithm_selection == "D")):
-        dijskra_algorithm(people_indanger, all_ships, port_x, port_y, show_animation)
+        dijskra_algorithm(people_indanger, all_ships, port_x, port_y, show_animation, human_endurance_water_seconds, cluster_labels, cl_pos)
     elif ((algorithm_selection == "a") or (algorithm_selection == "A")):
         astar_algorithm(people_indanger, all_ships, port_x, port_y)
     else:
