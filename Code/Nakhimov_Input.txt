@@ -1,8 +1,8 @@
-4343 #port x coordinate
-4343 #port y coordinate
+-4971 #port x coordinate
+-7103.67 #port y coordinate
 0    #wreck x coordinate
 0    #wreck y coordinate
 500  #max radius from wreck point
-150  #number of people onboard
-81   #number of casualties  [--optional]
+1234  #number of people at sea
+423   #number of casualties  [--optional]
 c    #water temp [c for cold, w for warm] [--optional]

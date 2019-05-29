@@ -10,36 +10,6 @@ import os
 from util import *
 
 show_animation = True
-cluster_labels = []
-cl_pos = []
-
-'''---------------------------------------------------------------------------------------------
-This module handles all of the algorithm's ploting
-----------------------------------------------------------------------------------------------'''
-
-
-def make_needed_plots(port_x, port_y, people_indanger, centerX, centerY, enc_circle_x, enc_circle_y, R_max_possible):
-    ion()
-    plt.style.use('dark_background')
-    fig = plt.figure()
-    plt.plot(port_x, port_y, 'yx')
-    for person in people_indanger:
-        if (person.id == 'cluster'):
-            plt.plot(person.x, person.y, 'm,')
-            an = plt.annotate(person.closeby, (person.x, person.y), fontsize=7)
-            cluster_labels.append(an)
-            cl_pos.append([person.x, person.y])
-        else:
-            plt.plot(person.x, person.y, 'r,')
-    plt.plot(centerX, centerY, 'cx')
-    plt.plot(enc_circle_x, enc_circle_y, 'b-.')
-    plt.xlabel('x [m]')
-    plt.ylabel('y [m]')
-    plt.axis('equal')
-    plt.grid(color='g', linestyle='--', linewidth=2)
-    plt.title('Mission overview')
-    plt.show()
-    plt.pause(0.0001)
 
 
 '''---------------------------------------------------------------------------------------------------
@@ -47,7 +17,7 @@ Main function
 ---------------------------------------------------------------------------------------------------'''
 
 
-def main(arguments):
+def main(output_file):
     """Program executes with the following parameters:
     1. Ports coordinates--> port_x, port_y (point P)
     2. Wreck's coordinates--> wreck_x, wreck_y (point W)
@@ -75,7 +45,7 @@ def main(arguments):
     # Arguments placing
     l = []
     try:
-        f = open('input.txt', 'r')
+        f = open('Samina_Input.txt', 'r')
     except:
         print('No input file present!')
         print('Exiting now...')
@@ -121,7 +91,7 @@ def main(arguments):
         person_indanger = people_in_danger(x, y)
         people_indanger.append(person_indanger)
 
-    people_indanger = process_points(people_indanger)
+    #people_indanger = process_points(people_indanger)
     #----------------------------------------------------------------------------------------------------------------------------------
     # Topology needed
     #----------------------------------------------------------------------------------------------------------------------------------
@@ -138,15 +108,10 @@ def main(arguments):
     #----------------------------------------------------------------------------------------------------------------------------------
     # The user is prompted to select a solving algorithm
     #----------------------------------------------------------------------------------------------------------------------------------
-
-    algorithm_selection = input(" Do you want to use Dijskra or A-star algorithm? (d/a) \n")
-    if ((algorithm_selection == "d") or (algorithm_selection == "D")):
-        dijskra_algorithm(people_indanger, all_ships, port_x, port_y, show_animation, human_endurance_water_seconds, cluster_labels, cl_pos)
-    elif ((algorithm_selection == "a") or (algorithm_selection == "A")):
-        astar_algorithm(people_indanger, all_ships, port_x, port_y)
-    else:
-        print(" There is no such algorithm. Please try again next time!")
-        exit()
+    nodes=people_indanger
+    nodes.insert(0,coordinates(port_x,port_y))
+    results=two_opt_algorithm(nodes,show_animation,people_indanger,wreck_x, wreck_y,enc_circle_x,enc_circle_y,port_x,port_y,all_ships,human_endurance_water_seconds,people_dead,output_file)
+    return results
     #-----------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -155,6 +120,10 @@ Direct control to main() --see above
 ------------------------------------------------------------------------------------------------------------------------------'''
 
 if __name__ == '__main__':
-    main(sys.argv)
+    of=open("output_100.txt","w+")
+    of.write("Run\tShip 1 #\tShip 1 vel [m/s]\tShip 1 capacity\tShip 1 score [m/s]\tShip 2 #\tShip 2 vel [m/s]\tShip 2 capacity\tShip 2 score [m/s]\tShip 3 #\tShip 3 vel [m/s]\tShip 3 capacity\tShip 3 score [m/s]\tSaved\tRemaining\tTime [h]\tSaves up to critical\tPeople Dead \n")
+    for run in range (1,100):
+        results=main(of)
+    #results.to_csv(r'Output.csv')
 
 #!---------------------------------------------------------------------------------------------------------------------------------
