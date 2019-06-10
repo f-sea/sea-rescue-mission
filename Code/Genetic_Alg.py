@@ -137,6 +137,9 @@ def Mutation(next_gen):
     if gain>0 : 
         next_gen[x1+1]=shm_X
         next_gen[x2]=shm_Y
+        if (x2-x1)>2:
+            x_to_y_part=next_gen[x2-1:x1+1:-1]
+            next_gen[x1+2:x2]=x_to_y_part
         print("Mutated:",next_gen," x1:",x1," x2:",x2," gain:",gain)
     else:
         print("Den egine Mutation")
