@@ -234,5 +234,6 @@ print(xi,len(xi))
 #print(deigmata[0],deigmata[1])
 #x=Next_Generation(deigmata,shmeia)
 #print("Choose_for_Cross(deigmata  ",Choose_for_Cross(deigmata))
-mutant1=Mutation(xi,shmeia)                              # !!!!! h synarthsh Mutant allazei to orisma, giati??????
+mylist=xi
+mutant1=Mutation(mylist,shmeia)                              # !!!!! h synarthsh Mutant allazei to orisma, giati??????
 print("Ektelesthke !! ",xi,mutant1,len(mutant1[0]))
