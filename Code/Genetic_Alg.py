@@ -57,7 +57,7 @@ N=15
 shmeia=np.random.random((N,2))
 deigmata=create_deigmata(10,N)
                                                      #CROSS_OVER
-def Cross_Over(deigmata_index_0,deigmata_index_1,arxikos_deikths,shmeia):     
+def Cross_Over(deigmata,deigmata_index_0,deigmata_index_1,arxikos_deikths,shmeia):     
     
     l1=[]
     i=arxikos_deikths
@@ -135,32 +135,34 @@ def Cross_Over(deigmata_index_0,deigmata_index_1,arxikos_deikths,shmeia):
 
                                                               #MUTATION
 
-def Mutation(next_gen,shmeia): #oi listes den prepei na exxoun sto telos to mhkos ths diadromhs
-    x1=rn.randint(0,len(next_gen)-2) #epilegoume 2 shmeia apo to next gen 
-    x2=rn.randint(0,len(next_gen)-2)
-    while sp.absolute(x2-x1)<=1 : #frontizoume na einai diaforetika shmeia
-        x2=rn.randint(0,len(next_gen)-1)
-    y1=x1
-    y2=x2
-    x1=min(y1,y2) #to x1 na einai < x2
-    x2=max(y1,y2)
-    shm_C=next_gen[x1]
-    shm_Y=next_gen[x1+1]
-    shm_X=next_gen[x2]
-    shm_Z=next_gen[x2+1]
-    # to gain pou vriskei th diafora (CY+XZ)-(CX+YZ) 
-    gain=calc_distance(shm_C,shm_Y,shmeia)+calc_distance(shm_X,shm_Z,shmeia)-calc_distance(shm_C,shm_X,shmeia)-calc_distance(shm_Y,shm_Z,shmeia)
-    if gain>0 : 
-        #print(gain)
-        next_gen[x1+1]=shm_X
-        next_gen[x2]=shm_Y
-        if (x2-x1)>2:
-            x_to_y_part=next_gen[x2-1:x1+1:-1]
-            next_gen[x1+2:x2]=x_to_y_part
-        #print("Mutated:",next_gen," x1:",x1," x2:",x2," gain:",gain)
-    else:
-        return Mutation(next_gen,shmeia) #auto to vazoume gia na epistrefei h synarthsh panta kati me mikroterh apostash diadromhs
-    return next_gen
+def Mutation(next_gener,shmeia): #oi listes den prepei na exoun sto telos to mhkos ths diadromhs
+    gain=0
+    k=0
+    #next_gener='local next_gener'
+    #print(next_gen)
+    while gain<=0 and k<=30 :#sta teleutaia stadia mporei na einai diskolo na vrei veltiwsh kai na einai vary ypologistika, opote vazoume p.x. 30 epanalhpseis
+        x1=rn.randint(0,len(next_gener)-2) #epilegoume 2 shmeia apo to next gen 
+        x2=rn.randint(0,len(next_gener)-2)
+        while sp.absolute(x2-x1)<=1 : #frontizoume na einai diaforetika shmeia
+            x2=rn.randint(0,len(next_gener)-2)
+        y1=x1
+        y2=x2
+        x1=min(y1,y2) #to x1 na einai < x2
+        x2=max(y1,y2)
+        shm_C=next_gener[x1]
+        shm_Y=next_gener[x1+1]
+        shm_X=next_gener[x2]
+        shm_Z=next_gener[x2+1]
+        # to gain pou vriskei th diafora (CY+XZ)-(CX+YZ) 
+        gain=calc_distance(shm_C,shm_Y,shmeia)+calc_distance(shm_X,shm_Z,shmeia)-calc_distance(shm_C,shm_X,shmeia)-calc_distance(shm_Y,shm_Z,shmeia)
+        if gain>0 : 
+            x_to_y_part=next_gener[x2:x1:-1]
+            next_gener[x1+1:x2+1:1]=x_to_y_part
+            #print("Mutated:",next_gen," x1:",x1," x2:",x2," gain:",gain)
+            #print(x_to_y_part)
+        k=+1
+        
+    return [next_gener,gain]
 
                          #Coosing From "deigmata" for Cross Over
 
@@ -200,26 +202,37 @@ def Choose_for_Cross(generation): #to kathe "list"-stoixeio tou generation exei 
 
 def Next_Generation(deigmata,shmeia):#me vash to prohgoumeno generation vgazei to epomeno generation
     next_Generation=[]
-    elit=int(len(deigmata)*0.2) 
+    elit=int(len(deigmata)*0.2) #prepei na einai toulaxiston 2
     
     for i in range(elit):#vazoyme to prwto 20% me pithanothta mutation 0.01
-        deigmata[i].pop(len(deigmata[i])-1)#vgazooume to teleutaio stoixeio apo th lista giati "Mutation","Cross_Over" douleuoun mono me int
+        arxiko_cost_list=deigmata[i].pop(len(deigmata[i])-1)#vgazoume to teleutaio stoixeio apo th lista giati "Mutation","Cross_Over" douleuoun mono me int
+        print(deigmata[i])
         x=rn.random()
         prob_of_mutation=0.01
         if x<=prob_of_mutation :
-            deigmata[i]=Mutation(deigmata[i],shmeia)
-        next_Generation.append([deigmata[i]+[cost_list(deigmata[i],shmeia)]])
+            mutant=Mutation(deigmata[i],shmeia)
+            next_Generation.append(mutant[0]+[arxiko_cost_list-mutant[1]])
+            deigmata[i]+[arxiko_cost_list]
+        else:
+            deigmata[i]+[arxiko_cost_list]
+            next_Generation.append(deigmata[i])
         
     bclass_num=len(deigmata)-elit
     
     for i in range(bclass_num):
         to_be_crossed=Choose_for_Cross(deigmata)
-        crossing=Cross_Over(to_be_crossed[0],to_be_crossed[1],0,shmeia)
-        next_Generation.append(crossing+[cost_list(crossing,shmeia)])
-        
+        crossing=Cross_Over(deigmata,to_be_crossed[0],to_be_crossed[1],0,shmeia)
+        n_gen=crossing+[cost_list(crossing,shmeia)]
+        next_Generation.append(n_gen)
+    next_Generation.sort(key=myFunc)    
     return next_Generation
         
 #dokimes
-x=Next_Generation(deigmata,shmeia)
+
+xi=Cross_Over(deigmata,0,1,0,shmeia)
+print(xi,len(xi))
+#print(deigmata[0],deigmata[1])
+#x=Next_Generation(deigmata,shmeia)
 #print("Choose_for_Cross(deigmata  ",Choose_for_Cross(deigmata))
-print("Ektelesthke !! ",x,len(x),len(deigmata))
+mutant1=Mutation(xi,shmeia)                              # !!!!! h synarthsh Mutant allazei to orisma, giati??????
+print("Ektelesthke !! ",xi,mutant1,len(mutant1[0]))
