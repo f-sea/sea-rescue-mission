@@ -1,32 +1,24 @@
 import numpy as np
 import random as rn
 import scipy as sp
+import copy
 """
 1) O pinakas "shmeia" einai apla gia na exw kapoia grhgorh eisodo kai na vlepw an doulevei
 sth thesh tou tha valoume ton pinaka "nodes" kai ta kosth mporoun na ypologistoun eite mono
 me apostaseis eite kai diairontas me tous anthropous.
-
 2) Ta shmeia (apo ton pinaka "shmeia") menoun stathera kai o kathe syndiasmos tous einai mia tyxai seira apo
 to 0-size(shmeia,0)
-
 3)o pinakas "deigmata" exei tis tyxaies seires apo shmeia. einai ths morfhs [[lista1],[lista2],...,[listaN]].
 H kathe [lista] exei tous akeraious pou mas deixnoun tis theseis twn shmeiwn apo ton pinaka "shmeia" kai sto telos 
 exei thn synolikh apostash ths diadromhs, P.X. [0,2,4,1,5,3.139439]. 
-
 4) (Mallon to ksereis) Autes einai oi synarthseis gia to "util.py" sto "ports.py" tha tis kaloume gia na
 vgoun oi nees genies kai ta loipa
-
 EXTRAS
-
 1) oi synarthseis "calc_distance", "calc_list","Cross_Over","Mutation" exoun extra eisodo ta shmeia gia na mporoume na
 elegxoume apo to main poia tha einai ta shmeia (nodes)
-
 2)Allaxe ligo to "Mutation" wste na stamataei molis vrei mia veltiwsh me ton 2opt
-
 3)Prostethike h "create_deigmata" gia na ftiaksei thn prwth generation
-
 4)Prostethike h "Choose_for_Cross" pou epilegei listes apo to generation mexri twra gia na ginoun eisodos sthn "Cross_over"
-
 5)Prostethike h "Next_Generation" pou paragei thn epomenh gennia me vash osa eipame
 """
 def calc_distance(ind_list1,ind_list2,shmeia): #pairnei san eisodo deiktes kai ypologizei thn apostash 
@@ -117,7 +109,7 @@ def Cross_Over(deigmata,deigmata_index_0,deigmata_index_1,arxikos_deikths,shmeia
                     b=a.index(i)
                     a.pop(b)
                     i=rn.choice(a)
-                fores_pou_l1_kenos=+1
+                fores_pou_l1_kenos+=1
             else :
                 fores_pou_l1_kenos=+1
                 while ((i in next_gen)==True):
@@ -135,10 +127,10 @@ def Cross_Over(deigmata,deigmata_index_0,deigmata_index_1,arxikos_deikths,shmeia
 
                                                               #MUTATION
 
-def Mutation(next_gener,shmeia): #oi listes den prepei na exoun sto telos to mhkos ths diadromhs
+def Mutation(next_gen,shmeia): #oi listes den prepei na exoun sto telos to mhkos ths diadromhs
     gain=0
     k=0
-    #next_gener='local next_gener'
+    next_gener=copy.copy(next_gen)
     #print(next_gen)
     while gain<=0 and k<=30 :#sta teleutaia stadia mporei na einai diskolo na vrei veltiwsh kai na einai vary ypologistika, opote vazoume p.x. 30 epanalhpseis
         x1=rn.randint(0,len(next_gener)-2) #epilegoume 2 shmeia apo to next gen 
@@ -160,7 +152,7 @@ def Mutation(next_gener,shmeia): #oi listes den prepei na exoun sto telos to mhk
             next_gener[x1+1:x2+1:1]=x_to_y_part
             #print("Mutated:",next_gen," x1:",x1," x2:",x2," gain:",gain)
             #print(x_to_y_part)
-        k=+1
+        k+=1
         
     return [next_gener,gain]
 
@@ -205,16 +197,15 @@ def Next_Generation(deigmata,shmeia):#me vash to prohgoumeno generation vgazei t
     elit=int(len(deigmata)*0.2) #prepei na einai toulaxiston 2
     
     for i in range(elit):#vazoyme to prwto 20% me pithanothta mutation 0.01
-        arxiko_cost_list=deigmata[i].pop(len(deigmata[i])-1)#vgazoume to teleutaio stoixeio apo th lista giati "Mutation","Cross_Over" douleuoun mono me int
-        print(deigmata[i])
+        #print(deigmata[i])
         x=rn.random()
-        prob_of_mutation=0.01
+        prob_of_mutation=0.01 #mporoume na thn allaksoume
         if x<=prob_of_mutation :
+            arxiko_cost_list=deigmata[i].pop(len(deigmata[i])-1)  #vgazoume to teleutaio stoixeio apo th lista giati "Mutation","Cross_Over" douleuoun mono me int
             mutant=Mutation(deigmata[i],shmeia)
             next_Generation.append(mutant[0]+[arxiko_cost_list-mutant[1]])
             deigmata[i]+[arxiko_cost_list]
         else:
-            deigmata[i]+[arxiko_cost_list]
             next_Generation.append(deigmata[i])
         
     bclass_num=len(deigmata)-elit
@@ -229,11 +220,11 @@ def Next_Generation(deigmata,shmeia):#me vash to prohgoumeno generation vgazei t
         
 #dokimes
 
-xi=Cross_Over(deigmata,0,1,0,shmeia)
-print(xi,len(xi))
+mylist=Cross_Over(deigmata,0,1,0,shmeia)
+print("Original_List:",mylist,"\nLenght:",len(mylist))
 #print(deigmata[0],deigmata[1])
 #x=Next_Generation(deigmata,shmeia)
 #print("Choose_for_Cross(deigmata  ",Choose_for_Cross(deigmata))
-mylist=xi
-mutant1=Mutation(mylist,shmeia)                              # !!!!! h synarthsh Mutant allazei to orisma, giati??????
-print("Ektelesthke !! ",xi,mutant1,len(mutant1[0]))
+mutant1=Mutation(mylist,shmeia)    # !!!!! h synarthsh Mutant allazei to orisma, giati??????
+print("\nEktelesthke !!","\n After mutation mylist:",mylist,
+      "\nAfter_Mutation mytant1:",mutant1,"\nLenght:",len(mutant1[0]))
