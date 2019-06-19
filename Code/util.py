@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import ion, show
 import os
-import pandas as pd
+import copy
 '''----------------------------------------------------------------------------------------------
 Define required classes
 -------------------------------------------------------------------------------------------------'''
@@ -136,6 +136,229 @@ def organise_ships_by_job_efficiency(all_ships):
 
 #--------------------------------------------------------------------------------------------------------------------------------
 
+def cost_list(idlist,points):
+    cost=0
+    for i in idlist:
+        try:
+            n=idlist[idlist.index(i)+1]
+            cost=cost+np.sqrt((points[i].x-points[n].x)**2+(points[i].y-points[n].y)**2)
+        except:
+            pass
+    return cost
+
+def myFunc(e):
+    return e[len(e)-1]
+
+def calc_distance(ind_list1,ind_list2,shmeia): #pairnei san eisodo deiktes kai ypologizei thn apostash
+    dist=np.sqrt((shmeia[ind_list1].x-shmeia[ind_list2].x)**2+(shmeia[ind_list1].y-shmeia[ind_list2].y)**2)
+    return dist
+
+def genetic_algo(nodes,show_animation,people_indanger,centerX,centerY,enc_circle_x,enc_circle_y,port_x,port_y,all_ships,human_endurance_water_seconds,people_dead,of):
+    all_routes_costs=[]
+    for generation in range(1,101):
+        print("Generation:\t",generation)
+        if (generation==1):
+            #Construct individuals of first generation
+            index_lists_set=shuffle(5,len(nodes))
+            for id_list in index_lists_set:
+                id_list.append(cost_list(id_list,nodes))
+                print("Individual:\t",id_list)
+            index_lists_set.sort(key=myFunc)
+        else:
+            next_generation=[index_lists_set[0],index_lists_set[1]]
+            for i in range(0,2):
+                next_generation=Mutation(next_generation[i],nodes)
+            while(len(next_generation)!=len(index_lists_set)):
+                [choices,b]=Choose_for_Cross(index_lists_set)
+                candidate=Cross_Over(choices,0,1,0,nodes)
+                candidate=Mutation(candidate,nodes)
+        #mylist=Cross_Over(index_lists_set,0,1,0,nodes)
+        #Mutation(nodes_lists_set)
+
+
+
+
+def Cross_Over(deigmata,deigmata_index_0,deigmata_index_1,arxikos_deikths,shmeia):
+
+    l1=[]
+    i=arxikos_deikths
+    fores_pou_l1_kenos=0
+    next_gen=[i]
+
+    while len(next_gen)<(len(deigmata[deigmata_index_0])-1):#vriskoume  th thesh tou stoixeiou i sthn kathe lista kai ti stoixei to perivalloun se
+        a1=deigmata[deigmata_index_0].index(i)               #kathe lista, ypologizoume thn apostash metaksi twn stoixeiwn an den exoume hdh paei
+        a2=deigmata[deigmata_index_1].index(i)
+        if (a1==len(deigmata[deigmata_index_0])-2 ) :# an to a1 einai o teleutaios integer oi geitonikoi tou einai o prwtos kai o arxikos
+            if (deigmata[deigmata_index_0][a1-1] in next_gen)==False :
+                l1.append([deigmata[deigmata_index_0][a1-1],calc_distance(i,deigmata[deigmata_index_0][a1-1],shmeia)])
+
+            if (deigmata[deigmata_index_0][0] in next_gen)==False :
+                l1.append([deigmata[deigmata_index_0][0],calc_distance(i,deigmata[deigmata_index_0][0],shmeia)])
+
+        if (a1==0 ):
+            if (deigmata[deigmata_index_0][1] in next_gen)==False :
+                l1.append([deigmata[deigmata_index_0][1],calc_distance(i,deigmata[deigmata_index_0][1],shmeia)])
+
+            if (deigmata[deigmata_index_0][len(deigmata[0])-2] in next_gen)==False :
+                l1.append([deigmata[deigmata_index_0][len(deigmata[0])-2],calc_distance(i,deigmata[deigmata_index_0][len(deigmata[0])-2],shmeia)])
+
+        if (a2==len(deigmata[1])-2) :
+            if (deigmata[deigmata_index_1][a2-1] in next_gen)==False :
+                l1.append([deigmata[deigmata_index_1][a2-1],calc_distance(i,deigmata[deigmata_index_1][a2-1],shmeia)])
+
+            if (deigmata[deigmata_index_1][0] in next_gen)==False :
+                l1.append([deigmata[deigmata_index_1][0],calc_distance(i,deigmata[deigmata_index_1][0],shmeia)])
+                #print([deigmata[1][a2-1],calc_distance(i,deigmata[1][a2-1])
+        if (a2==0 ):
+            if (deigmata[deigmata_index_1][1] in next_gen)==False :
+                l1.append([deigmata[deigmata_index_1][1],calc_distance(i,deigmata[deigmata_index_1][1],shmeia)])
+
+            if (deigmata[deigmata_index_1][len(deigmata[0])-2] in next_gen)==False :
+                l1.append([deigmata[deigmata_index_1][len(deigmata[1])-2],calc_distance(i,deigmata[deigmata_index_1][len(deigmata[1])-2],shmeia)])
+
+        if (a1>0 and a1<(len(deigmata[0])-2)):
+            if (deigmata[deigmata_index_0][a1-1] in next_gen)==False :
+                l1.append([deigmata[deigmata_index_0][a1-1],calc_distance(i,deigmata[deigmata_index_0][a1-1],shmeia)])
+                #print([deigmata[0][a1-1],calc_distance(i,deigmata[0][a1-1])])
+
+            if (deigmata[deigmata_index_0][a1+1] in next_gen)==False :
+                l1.append([deigmata[deigmata_index_0][a1+1],calc_distance(i,deigmata[deigmata_index_0][a1+1],shmeia)])
+
+        if (a2>0 and a2<(len(deigmata[1])-2)) :
+            if (deigmata[deigmata_index_1][a2-1] in next_gen)==False :
+                l1.append([deigmata[deigmata_index_1][a2-1],calc_distance(i,deigmata[deigmata_index_1][a2-1],shmeia)])
+
+            if (deigmata[deigmata_index_1][a2+1] in next_gen)==False :
+                l1.append([deigmata[deigmata_index_1][a2+1],calc_distance(i,deigmata[deigmata_index_1][a2+1],shmeia)])
+        #print("to l1:",l1," next generation: ",next_gen)
+        if len(l1)==0:#an exoume hdh paei se olous tous geitonikous deiktes tou i epilegoume enan tyxaia, pou den exume paei
+            if fores_pou_l1_kenos==0 :
+                a=deigmata[deigmata_index_1][0:(len(deigmata[deigmata_index_1])-1)]
+                while ((i in next_gen)==True):
+                    b=a.index(i)
+                    a.pop(b)
+                    i=rn.choice(a)
+                fores_pou_l1_kenos+=1
+            else :
+                fores_pou_l1_kenos=+1
+                while ((i in next_gen)==True):
+                    b=a.index(i)
+                    a.pop(b)
+                    i=rn.choice(a)
+            l1.append([i,1])
+
+        l1.sort(key=myFunc) #vriskoume poios einai o geitonikos deikths tou i me thn mikroterh apostash
+        i=l1[0][0]
+        next_gen.append(i)
+        #print(l1,"to_l1",",to_i:",i,next_gen)
+        l1=[]
+    return next_gen
+
+                                                              #MUTATION
+
+def Mutation(next_gen,shmeia): #oi listes den prepei na exoun sto telos to mhkos ths diadromhs
+    gain=0
+    k=0
+    next_gener=copy.copy(next_gen)
+    #print(next_gen)
+    while gain<=0 and k<=30 :#sta teleutaia stadia mporei na einai diskolo na vrei veltiwsh kai na einai vary ypologistika, opote vazoume p.x. 30 epanalhpseis
+        x1=np.random.randint(0,len(next_gener)-2) #epilegoume 2 shmeia apo to next gen
+        x2=np.random.randint(0,len(next_gener)-2)
+        while np.absolute(x2-x1)<=1 : #frontizoume na einai diaforetika shmeia
+            x2=np.random.randint(0,len(next_gener)-2)
+        y1=x1
+        y2=x2
+        x1=min(y1,y2) #to x1 na einai < x2
+        x2=max(y1,y2)
+        shm_C=next_gener[x1]
+        shm_Y=next_gener[x1+1]
+        shm_X=next_gener[x2]
+        shm_Z=next_gener[x2+1]
+        # to gain pou vriskei th diafora (CY+XZ)-(CX+YZ)
+        gain=calc_distance(shm_C,shm_Y,shmeia)+calc_distance(shm_X,shm_Z,shmeia)-calc_distance(shm_C,shm_X,shmeia)-calc_distance(shm_Y,shm_Z,shmeia)
+        if gain>0 :
+            x_to_y_part=next_gener[x2:x1:-1]
+            next_gener[x1+1:x2+1:1]=x_to_y_part
+            #print("Mutated:",next_gen," x1:",x1," x2:",x2," gain:",gain)
+            #print(x_to_y_part)
+        k+=1
+
+    return [next_gener,gain]
+
+                         #Coosing From "deigmata" for Cross Over
+
+def Choose_for_Cross(generation): #to kathe "list"-stoixeio tou generation exei sto telos to fitness tou
+    num_of_elit=int(len(generation)*0.2) #prepei na exei toulaxiston 2 stoixeia ara len(generation)>=10
+
+    elit_1=rn.randint(0,num_of_elit-1)
+    elit_2=rn.randint(0,num_of_elit-1)
+    bclass_1=rn.randint(num_of_elit,len(generation)-1)
+    bclass_2=rn.randint(num_of_elit,len(generation)-1)
+    while elit_2==elit_1 :#den prepei na epileksoume idious deiktes
+        elit_2=rn.randint(0,num_of_elit-1)
+    while bclass_2==bclass_1 :#den prepei na epileksoume idious deiktes
+        bclass_2=rn.randint(num_of_elit,len(generation)-1)
+
+    elist=[[elit_1]+generation[elit_1],[elit_2]+generation[elit_2]]#prosthetoume to [elit_1] gia na krathsoume th thesh ths listas me thn opoia tha ginei to Cross_Over
+    elist.sort(key=myFunc)
+    bclass=[[bclass_1]+generation[bclass_1],[bclass_2]+generation[bclass_2]]
+    bclass.sort(key=myFunc)
+    #print(elist,"<-elist bclass->",bclass)
+    bias=0.7
+    tyxaios=rn.random()
+
+    if tyxaios<=bias :
+        elit=elist[0][0]
+    else:
+        elit=elist[1][0]
+    tyxaios=rn.random()
+
+    if tyxaios<=bias :
+        bclass=bclass[0][0]
+    else:
+        bclass=bclass[1][0]
+    return (elit,bclass) #sto telos vgrazoume th thesh ths [lista] apo ta deigmata [[lista1],...,[listaN]]
+
+                              #Creating form deigmata the next generation(!!)
+
+def Next_Generation(deigmata,shmeia):#me vash to prohgoumeno generation vgazei to epomeno generation
+    next_Generation=[]
+    elit=int(len(deigmata)*0.2) #prepei na einai toulaxiston 2
+
+    for i in range(elit):#vazoyme to prwto 20% me pithanothta mutation 0.01
+        #print(deigmata[i])
+        x=rn.random()
+        prob_of_mutation=0.01 #mporoume na thn allaksoume
+        if x<=prob_of_mutation :
+            arxiko_cost_list=deigmata[i].pop(len(deigmata[i])-1)  #vgazoume to teleutaio stoixeio apo th lista giati "Mutation","Cross_Over" douleuoun mono me int
+            mutant=Mutation(deigmata[i],shmeia)
+            next_Generation.append(mutant[0]+[arxiko_cost_list-mutant[1]])
+            deigmata[i]+[arxiko_cost_list]
+        else:
+            next_Generation.append(deigmata[i])
+
+    bclass_num=len(deigmata)-elit
+
+    for i in range(bclass_num):
+        to_be_crossed=Choose_for_Cross(deigmata)
+        crossing=Cross_Over(deigmata,to_be_crossed[0],to_be_crossed[1],0,shmeia)
+        n_gen=crossing+[cost_list(crossing,shmeia)]
+        next_Generation.append(n_gen)
+    next_Generation.sort(key=myFunc)
+    return next_Generation
+
+def shuffle(how_many,no_nodes):
+    set_of_lists=[]
+    for counter in range(0,how_many+1):
+        sing_index_list=[]
+        for n in range(0,no_nodes):
+            index=np.random.randint(0,no_nodes+1)
+            while(index in sing_index_list):
+                index=np.random.randint(0,no_nodes+1)
+            sing_index_list.append(index)
+        set_of_lists.append(sing_index_list)
+    return set_of_lists
+
 # Finds the shortest route by saving as many people as possible in as little time as possible
 
 def two_opt_algorithm(nodes,show_animation,people_indanger,centerX,centerY,enc_circle_x,enc_circle_y,port_x,port_y,all_ships,human_endurance_water_seconds,people_dead,of):
@@ -148,6 +371,10 @@ def two_opt_algorithm(nodes,show_animation,people_indanger,centerX,centerY,enc_c
     while go:
         (go,solution) = optimize2opt(nodes, solution, number_of_nodes,show_animation,people_indanger,centerX,centerY,enc_circle_x,enc_circle_y,port_x,port_y)
     print ("Ship routing on progress...")
+    solution.append(coordinates(port_x,port_y))
+    solution.insert(0,coordinates(port_x,port_y))
+    plt.plot([solution[0].x,solution[1].x],[solution[0].y,solution[1].y],'w-')
+    plt.plot([solution[-1].x,solution[-2].x],[solution[-1].y,solution[-2].y],'w-')
     results=ship_route(all_ships,solution,show_animation,human_endurance_water_seconds,people_dead,of)
     return results
 
@@ -294,6 +521,8 @@ def frame4(nodes, solution, sn, c, y, x, z, gain,show_animation,people_indanger,
         plt.pause(0.0001)
 
 def ship_route(all_ships,points_to_visit,show_animation,human_endurance_water_seconds,people_dead,of):
+    all_return_point=points_to_visit[-1]
+    all_start_point=points_to_visit[0]
     ship_ranking = organise_ships_by_job_efficiency(all_ships)
     visited=[points_to_visit[0]]
     colors = ["m", "g", "y"]
@@ -329,6 +558,11 @@ def ship_route(all_ships,points_to_visit,show_animation,human_endurance_water_se
                     plt.pause(0.0001)
                 ship.x = destination.x
                 ship.y = destination.y
+            ship.distance_covered = ship.distance_covered + np.sqrt((ship.x - all_return_point.x)**2 + (ship.y - all_return_point.y)**2)
+            if show_animation:
+                    plt.show()
+                    plt.plot([ship.x, all_return_point.x], [ship.y, all_return_point.y], color + "-")
+                    plt.pause(0.0001)
             sum1 = 0
             sum2=0
             for point in points_to_visit:
@@ -342,14 +576,9 @@ def ship_route(all_ships,points_to_visit,show_animation,human_endurance_water_se
             ship.time_to_save()
             ship.cap = whole_cap
             ship.distance_covered=0
-            '''
-            ship.x = start_xpos
-            ship.y = start_ypos
-            '''
-        plt.show()
-    results=mission_overview(all_ships, sum1-sum2, visited,people_dead,of)
-    return results
-    #return saved_points
+            ship.x = all_start_point.x
+            ship.y = all_start_point.y
+    mission_overview(all_ships, sum1-sum2, visited,people_dead,of)
 
 def total_cost( nodes, solution ):
     """Compute the total distrance travelled for the given solution"""
@@ -367,7 +596,6 @@ def cost(n1, n2):
     route_cost=distance/people_at_destination
     return [distance,route_cost]
 
-
 '''
 /*Results*/
 '''
@@ -384,43 +612,18 @@ mission_overview_calls=0
 def mission_overview(ships, remaining, savedp,people_dead,of):
     global mission_overview_calls
     mission_overview_calls+=1
-    df=pd.DataFrame()
     of.write(str(mission_overview_calls)+'\t')
     for ship in ships:
         of.write(str(ship.no_total)+'\t'+str(ship.vel)+'\t'+str(ship.cap)+'\t'+str(ship.score)+'\t')
-    '''
-    columns = ['Run','Maya 450','Matrix 850','FRC 1204','Saved','Remaining','Time','Saves up to critical time','People Dead']
-    df=pd.DataFrame()
-    df.columns=columns
-    df['Run'][mission_overview-1]=mission_overview
-
-    for ship in ships:
-        ship_column=ships.index(ship)+1
-        if (ship_column==1):
-            df['Maya 450'][mission_overview_calls-1]=ship.no_total
-        elif (ship_column==2):
-            df['Matrix 450'][mission_overview_calls-1]=ship.no_total
-        else:
-            df['FRC 1204'][mission_overview_calls-1]=ship.no_total
-    '''
     print("\n Mission Result")
     print("===============")
     saved = 0
     for point in savedp:
         saved = saved + point.closeby
     of.write(str(saved)+'\t'+str(remaining)+'\t')
-    '''
-    df['Saved'][mission_overview_calls-1]=saved
-    df['Remaining'][mission_overview_calls-1]=remaining
-    '''
     print("People saved:      \t", saved,' p')
     print("People left behind: \t", remaining, ' p')
     [crit_lives, time] = mission_time(ships)
-    '''
-    df['Time'][mission_overview_calls-1]=(time+600*saved)/3600
-    df['Saves up to critical time'][mission_overview_calls-1]=crit_lives
-    df['People Dead'][mission_overview_calls-1]=people_dead
-    '''
     of.write(str(format((time+600*saved)/3600, '.2f'))+'\t')
     of.write(str(crit_lives)+'\t'+str(people_dead)+'\n')
     print("Established in [h]: \t", format((time+600*saved)/3600, '.2f')) #10 minutes delay is also calculated between each save
@@ -429,4 +632,4 @@ def mission_overview(ships, remaining, savedp,people_dead,of):
         print("Proclaimed:\t Successfull")
     else:
         print ("Proclaimed:\t Failure")
-    return df
+

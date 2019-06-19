@@ -109,7 +109,13 @@ def main(output_file):
     # The user is prompted to select a solving algorithm
     #----------------------------------------------------------------------------------------------------------------------------------
     nodes=people_indanger
-    nodes.insert(0,coordinates(port_x,port_y))
+    #choice=input("Use 2-opt directly (2) or genetic algorithm (g)? \n")
+    '''
+    if (choice=='2'):
+        results=two_opt_algorithm(nodes,show_animation,people_indanger,wreck_x, wreck_y,enc_circle_x,enc_circle_y,port_x,port_y,all_ships,human_endurance_water_seconds,people_dead,output_file)
+    elif (choice=='g'):
+        results=genetic_algo(nodes,show_animation,people_indanger,wreck_x, wreck_y,enc_circle_x,enc_circle_y,port_x,port_y,all_ships,human_endurance_water_seconds,people_dead,output_file)
+    '''
     results=two_opt_algorithm(nodes,show_animation,people_indanger,wreck_x, wreck_y,enc_circle_x,enc_circle_y,port_x,port_y,all_ships,human_endurance_water_seconds,people_dead,output_file)
     return results
     #-----------------------------------------------------------------------------------------------------------------------------------
@@ -122,8 +128,7 @@ Direct control to main() --see above
 if __name__ == '__main__':
     of=open("output_100.txt","w+")
     of.write("Run\tShip 1 #\tShip 1 vel [m/s]\tShip 1 capacity\tShip 1 score [m/s]\tShip 2 #\tShip 2 vel [m/s]\tShip 2 capacity\tShip 2 score [m/s]\tShip 3 #\tShip 3 vel [m/s]\tShip 3 capacity\tShip 3 score [m/s]\tSaved\tRemaining\tTime [h]\tSaves up to critical\tPeople Dead \n")
-    for run in range (1,100):
+    for run in range (1,101):
         results=main(of)
-    #results.to_csv(r'Output.csv')
 
 #!---------------------------------------------------------------------------------------------------------------------------------
